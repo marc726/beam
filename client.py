@@ -16,7 +16,8 @@ class Client:
             self.is_connected = True
             Thread(target=self.receive_file).start()
             return True
-        except socket.error:
+        except Exception as e:
+            print(f'Failed to connect to the server: {e}')
             return False
 
     def disconnect_from_server(self):
