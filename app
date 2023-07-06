@@ -25,16 +25,16 @@ class Application(tk.Tk):
         self.ip_label = tk.Label(self, text="IP address:")
         self.ip_label.pack()
 
-        self.ip_entry = tk.Entry(self)
+        self.ip_entry = tk.Entry(self, state=tk.DISABLED)
         self.ip_entry.pack()
 
         self.port_label = tk.Label(self, text="Port:")
         self.port_label.pack()
 
-        self.port_entry = tk.Entry(self)
+        self.port_entry = tk.Entry(self,state=tk.DISABLED)
         self.port_entry.pack()
 
-        self.connect_button = tk.Button(self, text="Connect to Server", command=self.connect_to_server)
+        self.connect_button = tk.Button(self, text="Connect to Server", command=self.connect_to_server,state=tk.DISABLED)
         self.connect_button.pack()
 
         self.status_label = tk.Label(self, text="")
@@ -50,22 +50,14 @@ class Application(tk.Tk):
 
         self.client = None
         self.server = None
-        self.save_dir = None
+        self.save_dir = tk.StringVar()
 
     def start_server(self):
-        if not self.save_dir:
-            self.status_label.config(text="Save directory not selected.")
-            return
         server_port = self.server_port_entry.get()
         if not server_port:
             self.status_label.config(text="Server port not provided.")
             return
-        self.server = Server(save_dir=self.save_dir, port=int(server_port))
-        server_port = int(self.server_port_entry.get())
-        if not server_port:
-            self.status_label.config(text="Server port not provided.")
-            return
-        self.server = Server(port=server_port)
+        self.server = Server(port=int(server_port))  # 'save_dir' is removed here.
         self.connect_button.config(state=tk.DISABLED)
         self.stop_server_button.config(state=tk.NORMAL)
         self.server_port_entry.config(state=tk.DISABLED)
@@ -86,7 +78,7 @@ class Application(tk.Tk):
 
     def connect_to_server(self):
         ip = self.ip_entry.get()
-        port = int(self.port_entry.get())
+        port = self.port_entry.get()
         if not ip:
             self.status_label.config(text="IP address not provided.")
             return
@@ -94,7 +86,7 @@ class Application(tk.Tk):
             self.status_label.config(text="Port not provided.")
             return
         if self.client is None or not self.client.is_connected:
-            self.client = Client(host=ip, port=int(port))
+            self.client = Client(host=ip, port=int(port), save_dir=self.save_dir)  # 'save_dir' is passed here.
             connection_status = self.client.connect_to_server()
             self.start_server_button.config(state=tk.DISABLED)
 
@@ -113,6 +105,10 @@ class Application(tk.Tk):
         self.save_dir = filedialog.askdirectory()
         if self.save_dir:
             self.save_dir_label.config(text=f"Save Directory: {self.save_dir}")
+            # Enable other widgets after selecting save directory
+            self.ip_entry.config(state=tk.NORMAL)
+            self.port_entry.config(state=tk.NORMAL)
+            self.connect_button.config(state=tk.NORMAL)
         else:
             self.save_dir_label.config(text="Save Directory: Not selected")
 
