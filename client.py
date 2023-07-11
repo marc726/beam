@@ -47,7 +47,9 @@ class Client:
             with open(file_path, 'wb') as file:
                 while True:
                     data = self.client_socket.recv(BUFFER_SIZE)
-                    if not data:
+                    if data == b'EOF':
+                        break
+                    elif not data:
                         break
                     file.write(data)
             print('File received.')

@@ -33,13 +33,14 @@ class Server:
         self.running = False
 
     def send_file(self, client_socket, file_path):
-         filename = os.path.basename(file_path)
-         client_socket.sendall(filename.encode() + b'\n')
+        filename = os.path.basename(file_path)
+        client_socket.sendall(filename.encode() + b'\n')
 
-         with open(file_path, 'rb') as file:
+        with open(file_path, 'rb') as file:
             while True:
                 data = file.read(BUFFER_SIZE)
                 if not data:
                     break
                 client_socket.sendall(data)
-         print('File sent.')
+        client_socket.sendall(b'EOF')  # Notify client of end of file
+        print('File sent.')
