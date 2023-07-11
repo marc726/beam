@@ -7,11 +7,12 @@ import os
 BUFFER_SIZE = 8192
 
 class Client:
-    def __init__(self, host='localhost', port=12345, save_dir=''):
+    def __init__(self, host='localhost', port=12345, save_dir='', gui=None):  # Add a 'gui' parameter with a default value of None.
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.host = host
         self.port = port
         self.save_dir = save_dir
+        self.gui = gui  # Assign the 'gui' parameter to an instance variable.
         self.is_connected = False
 
     def connect_to_server(self):
