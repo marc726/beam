@@ -12,6 +12,7 @@ class Server:
         self.server_socket.bind((host, port))
         self.server_socket.listen(1)
         self.running = False
+        self.gui = gui  # Store the 'gui' parameter as an instance variable
 
     def start(self):
         self.running = True
