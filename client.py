@@ -59,4 +59,3 @@ class Client:
     def disconnect_from_server(self):
         self.is_connected = False
         self.client_socket.close()
-
