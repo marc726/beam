@@ -2,7 +2,7 @@ import socket
 import os
 from tkinter import filedialog
 
-#Increase Speed by raising buffer size to 8kb
+# Increase Speed by raising buffer size to 8kb
 BUFFER_SIZE = 8192
 
 class Server:
@@ -38,11 +38,14 @@ class Server:
         filename = os.path.basename(file_path)
         client_socket.sendall(filename.encode() + b'\n')
 
+        # Send file size
+        file_size = os.path.getsize(file_path)
+        client_socket.sendall(str(file_size).encode() + b'\n')
+
         with open(file_path, 'rb') as file:
             while True:
                 data = file.read(BUFFER_SIZE)
                 if not data:
                     break
                 client_socket.sendall(data)
-        client_socket.sendall(b'EOF')  # Notify client of end of file
         print('File sent.')

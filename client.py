@@ -1,10 +1,9 @@
 import socket
 from threading import Thread
-import time
 from tkinter import filedialog, Tk
 import os
 
-#Increase Speed by raising buffer size to 8kb
+# Increase Speed by raising buffer size to 8kb
 BUFFER_SIZE = 8192
 
 class Client:
@@ -33,30 +32,33 @@ class Client:
 
     def receive_file(self):
         try:
-            # Receive the first message from the server
-            message = self.client_socket.recv(BUFFER_SIZE)
-
-            if message == b'No file selected.':
+            # Receive filename
+            filename = self.client_socket.recv(BUFFER_SIZE).decode().strip()
+            if filename == 'No file selected.':
                 print('Server did not select a file.')
                 return
-
-            # If the message is not 'No file selected.', it is the filename
-            filename = message.decode().strip()
-
+            
+            # Receive file size
+            file_size = int(self.client_socket.recv(BUFFER_SIZE).decode().strip())
+            
             # Open the file
             file_path = os.path.join(self.save_dir, filename)
+            received_size = 0
             with open(file_path, 'wb') as file:
-                while True:
-                    data = self.client_socket.recv(BUFFER_SIZE)
+                while received_size < file_size:
+                    data = self.client_socket.recv(min(BUFFER_SIZE, file_size - received_size))
                     if not data:
                         break
+                    received_size += len(data)
                     file.write(data)
-            print('File received.')
+                    self.print_progress_bar(received_size, file_size)
+            print('\nFile received.')
         except Exception as e:
             print(f"Error occurred: {e}")
         finally:
             self.disconnect_from_server()
 
-    def disconnect_from_server(self):
-        self.is_connected = False
-        self.client_socket.close()
+    @staticmethod
+    def print_progress_bar(completed, total):
+        percent = int((completed / total) * 100)
+        print(f"Progress: [{'#' * percent}{' ' * (100 - percent)}] {percent}%", end='\r')
