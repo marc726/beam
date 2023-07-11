@@ -23,6 +23,8 @@ class Server:
                 file_path = filedialog.askopenfilename()
                 if file_path:
                     self.send_file(client_socket, file_path)
+                else:
+                    client_socket.sendall(b'No file selected.')
             except Exception as e:
                 print(f"Error occurred: {e}")
             finally:
