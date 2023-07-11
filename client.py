@@ -71,7 +71,6 @@ class Client:
             self.disconnect_from_server()
 
     @staticmethod
-    def print_progress_bar(self, completed, total):
-        if not self.gui:  # If no gui instance was provided, print to the console
-            percent = int((completed / total) * 100)
-            print(f"Progress: [{'#' * percent}{' ' * (100 - percent)}] {percent}%", end='\r')
+    def print_progress_bar(completed, total):
+        percent = int((completed / total) * 100)
+        print(f"Progress: [{'#' * percent}{' ' * (100 - percent)}] {percent}%", end='\r')
