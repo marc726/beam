@@ -8,6 +8,7 @@ BUFFER_SIZE = 8192
 class Server:
     def __init__(self, save_dir='', host='0.0.0.0', port=12345):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Reuse port
         self.server_socket.bind((host, port))
         self.server_socket.listen(1)
         self.running = False
