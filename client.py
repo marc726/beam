@@ -28,12 +28,13 @@ class Client:
 
     def receive_file(self):
         unique_filename = self.save_dir + '/received_file_' + str(int(time.time()))
+        data = self.client_socket.recv(1024)
+        if not data:
+            return
         with open(unique_filename, 'wb') as file:
-            while True:
-                data = self.client_socket.recv(1024)
-                if not data:
-                    break
+            while data:
                 file.write(data)
+                data = self.client_socket.recv(1024)
         print('File received.')
 
     def disconnect_from_server(self):
