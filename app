@@ -71,7 +71,7 @@ class Application(tk.Tk):
     
     def update_progress_bar(self, completed, total):
         progress = (completed / total) * 100
-        self.progress_bar['value'] = progress
+        self.progress['value'] = progress
         self.update_idletasks()  # Force an update of the GUI.
 
     def start_server(self):
