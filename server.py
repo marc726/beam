@@ -15,9 +15,12 @@ class Server:
         while self.running:
             client_socket, addr = self.server_socket.accept()
             print(f'Connected to {addr}')
-            file_path = filedialog.askopenfilename()
-            if file_path:
-                self.send_file(client_socket, file_path)
+            # Wait for client message to start sending file
+            client_message = client_socket.recv(1024).decode()
+            if client_message == 'READY_FOR_FILE':
+                file_path = filedialog.askopenfilename()
+                if file_path:
+                    self.send_file(client_socket, file_path)
             client_socket.close()
         self.server_socket.close()
 
@@ -25,10 +28,13 @@ class Server:
         self.running = False
 
     def send_file(self, client_socket, file_path):
-        with open(file_path, 'rb') as file:
+         filename = os.path.basename(file_path)
+         client_socket.sendall(filename.encode() + b'\n')
+
+         with open(file_path, 'rb') as file:
             while True:
                 data = file.read(1024)
                 if not data:
                     break
-                client_socket.send(data)
-        print('File sent.')
+                client_socket.sendall(data)
+         print('File sent.')

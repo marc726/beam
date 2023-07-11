@@ -46,8 +46,6 @@ class Application(tk.Tk):
         self.save_dir_label = tk.Label(self, text="Save Directory:")
         self.save_dir_label.pack()
 
-        # other widgets...
-
         self.client = None
         self.server = None
         self.save_dir = tk.StringVar()
