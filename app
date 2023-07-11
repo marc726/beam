@@ -3,7 +3,7 @@ from tkinter import filedialog
 from threading import Thread
 from client import Client
 from server import Server
-from tkinter import filedialog, messagebox, Tk, Label, Button, Entry, StringVar, DISABLED, NORMAL
+from tkinter import filedialog, messagebox, ttk, Tk, Label, Button, Entry, StringVar, DISABLED, NORMAL
 
 
 class Application(tk.Tk):
@@ -48,6 +48,11 @@ class Application(tk.Tk):
         self.save_dir_label = tk.Label(self, text="Save Directory:")
         self.save_dir_label.pack()
 
+         # Add progress bar
+        self.progress = ttk.Progressbar(self, orient="horizontal",
+                                        length=200, mode="determinate")
+        self.progress.pack()
+
         self.client = None
         self.server = None
         self.save_dir = tk.StringVar()
@@ -59,6 +64,14 @@ class Application(tk.Tk):
             self.save_dir = filedialog.askdirectory()
         
         self.save_dir_label.config(text=f"Save Directory: {self.save_dir}")
+
+    def start_progress(self, max_val):
+        self.progress["value"] = 0
+        self.progress["maximum"] = max_val
+    
+    def update_progress(self, val):
+        self.progress["value"] = val
+        self.update_idletasks()
 
     def start_server(self):
         server_port = self.server_port_entry.get()
@@ -94,7 +107,7 @@ class Application(tk.Tk):
             self.status_label.config(text="Port not provided.")
             return
         if self.client is None or not self.client.is_connected:
-            self.client = Client(host=ip, port=int(port), save_dir=self.save_dir)  # 'save_dir' is passed here.
+            self.client = Client(host=ip, port=int(port), save_dir=self.save_dir, gui=self)  # Pass the Application instance to Client
             connection_status = self.client.connect_to_server()
             self.start_server_button.config(state=tk.DISABLED)
 

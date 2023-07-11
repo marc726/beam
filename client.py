@@ -61,7 +61,8 @@ class Client:
                         break
                     bytes_received += len(data)
                     file.write(data)
-                    self.print_progress_bar(bytes_received, file_size)
+                    if self.gui:  # Check if the gui instance was provided
+                        self.gui.update_progress(bytes_received)
             print('File received.')
         except Exception as e:
             print(f"Error occurred: {e}")
@@ -69,6 +70,7 @@ class Client:
             self.disconnect_from_server()
 
     @staticmethod
-    def print_progress_bar(completed, total):
-        percent = int((completed / total) * 100)
-        print(f"Progress: [{'#' * percent}{' ' * (100 - percent)}] {percent}%", end='\r')
+    def print_progress_bar(self, completed, total):
+        if not self.gui:  # If no gui instance was provided, print to the console
+            percent = int((completed / total) * 100)
+            print(f"Progress: [{'#' * percent}{' ' * (100 - percent)}] {percent}%", end='\r')
