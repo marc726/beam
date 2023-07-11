@@ -14,6 +14,8 @@ class Client:
         try:
             self.client_socket.connect((self.host, self.port))
             self.is_connected = True
+            # Inform the server that the client is ready for file transfer
+            self.client_socket.sendall(b'READY_FOR_FILE')
             Thread(target=self.receive_file).start()
             return True
         except Exception as e:
@@ -23,16 +25,6 @@ class Client:
     def disconnect_from_server(self):
         self.client_socket.close()
         self.is_connected = False
-
-    def receive_file(self):
-        with open(self.save_dir + '/received_file', 'wb') as file:
-            while True:
-                data = self.client_socket.recv(1024)
-                if not data:
-                    break
-                file.write(data)
-        print('File received.')
-
 
     def receive_file(self):
         unique_filename = self.save_dir + '/received_file_' + str(int(time.time()))
