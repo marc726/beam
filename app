@@ -3,6 +3,8 @@ from tkinter import filedialog
 from threading import Thread
 from client import Client
 from server import Server
+from tkinter import filedialog, messagebox, Tk, Label, Button, Entry, StringVar, DISABLED, NORMAL
+
 
 class Application(tk.Tk):
     def __init__(self):
@@ -25,16 +27,16 @@ class Application(tk.Tk):
         self.ip_label = tk.Label(self, text="IP address:")
         self.ip_label.pack()
 
-        self.ip_entry = tk.Entry(self, state=tk.DISABLED)
+        self.ip_entry = tk.Entry(self)
         self.ip_entry.pack()
 
         self.port_label = tk.Label(self, text="Port:")
         self.port_label.pack()
 
-        self.port_entry = tk.Entry(self,state=tk.DISABLED)
+        self.port_entry = tk.Entry(self)
         self.port_entry.pack()
 
-        self.connect_button = tk.Button(self, text="Connect to Server", command=self.connect_to_server,state=tk.DISABLED)
+        self.connect_button = tk.Button(self, text="Connect to Server", command=self.connect_to_server)
         self.connect_button.pack()
 
         self.status_label = tk.Label(self, text="")
@@ -49,6 +51,14 @@ class Application(tk.Tk):
         self.client = None
         self.server = None
         self.save_dir = tk.StringVar()
+
+        self.save_dir = filedialog.askdirectory()  # Prompt the user to select a directory
+
+        while not self.save_dir:  # Keep prompting until a directory is selected
+            messagebox.showinfo("Select Directory", "You must select a directory to save files!")
+            self.save_dir = filedialog.askdirectory()
+        
+        self.save_dir_label.config(text=f"Save Directory: {self.save_dir}")
 
     def start_server(self):
         server_port = self.server_port_entry.get()

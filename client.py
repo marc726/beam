@@ -1,6 +1,7 @@
 import socket
 from threading import Thread
 import time
+from tkinter import filedialog, Tk
 import os
 
 #Increase Speed by raising buffer size to 8kb
@@ -8,10 +9,14 @@ BUFFER_SIZE = 8192
 
 class Client:
     def __init__(self, host='localhost', port=12345, save_dir=''):
+        
+        root = Tk()
+        root.withdraw()
+
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.host = host
         self.port = port
-        self.save_dir = save_dir
+        self.save_dir = filedialog.askdirectory()
         self.is_connected = False
 
     def connect_to_server(self):
