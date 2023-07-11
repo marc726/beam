@@ -6,7 +6,7 @@ from tkinter import filedialog
 BUFFER_SIZE = 8192
 
 class Server:
-    def __init__(self, save_dir='', host='0.0.0.0', port=12345):
+    def __init__(self, save_dir='', host='0.0.0.0', port=12345, gui=None):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Reuse port
         self.server_socket.bind((host, port))
