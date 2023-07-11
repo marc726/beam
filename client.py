@@ -63,7 +63,7 @@ class Client:
                     bytes_received += len(data)
                     file.write(data)
                     if self.gui:  # Check if the gui instance was provided
-                        self.gui.update_progress(bytes_received)
+                        self.gui.update_progress_bar(bytes_received, file_size)  # Update the progress bar with current progress
             print('File received.')
         except Exception as e:
             print(f"Error occurred: {e}")

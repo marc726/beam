@@ -69,9 +69,10 @@ class Application(tk.Tk):
         self.progress["value"] = 0
         self.progress["maximum"] = max_val
     
-    def update_progress(self, val):
-        self.progress["value"] = val
-        self.update_idletasks()
+    def update_progress_bar(self, completed, total):
+        progress = (completed / total) * 100
+        self.progress_bar['value'] = progress
+        self.update_idletasks()  # Force an update of the GUI.
 
     def start_server(self):
         server_port = self.server_port_entry.get()
