@@ -17,15 +17,16 @@ class Server:
         self.running = True
         print('Server is waiting for a connection...')
         while self.running:
-            client_socket, addr = self.server_socket.accept()
-            print(f'Connected to {addr}')
-            # Wait for client message to start sending file
-            client_message = client_socket.recv(BUFFER_SIZE).decode()
-            if client_message == 'READY_FOR_FILE':
+            try:
+                client_socket, addr = self.server_socket.accept()
+                print(f'Connected to {addr}')
                 file_path = filedialog.askopenfilename()
                 if file_path:
                     self.send_file(client_socket, file_path)
-            client_socket.close()
+            except Exception as e:
+                print(f"Error occurred: {e}")
+            finally:
+                client_socket.close()
         self.server_socket.close()
 
     def stop(self):

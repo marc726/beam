@@ -33,23 +33,28 @@ class Client:
         self.is_connected = False
 
     def receive_file(self):
-         # Receive filename
-        filename = ""
-        while True:
-            char = self.client_socket.recv(1).decode()
-            if char == '\n':
-                break
-            filename += char
-
-     # Open the file
-        file_path = os.path.join(self.save_dir, filename)
-        with open(file_path, 'wb') as file:
+        try:
+            # Receive filename
+            filename = ""
             while True:
-                data = self.client_socket.recv(BUFFER_SIZE)
-                if not data:
+                char = self.client_socket.recv(1).decode()
+                if char == '\n':
                     break
-                file.write(data)
-        print('File received.')
+                filename += char
+
+            # Open the file
+            file_path = os.path.join(self.save_dir, filename)
+            with open(file_path, 'wb') as file:
+                while True:
+                    data = self.client_socket.recv(BUFFER_SIZE)
+                    if not data:
+                        break
+                    file.write(data)
+            print('File received.')
+        except Exception as e:
+            print(f"Error occurred: {e}")
+        finally:
+            self.disconnect_from_server()
 
     def disconnect_from_server(self):
         self.is_connected = False
