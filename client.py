@@ -3,6 +3,9 @@ from threading import Thread
 import time
 import os
 
+#Increase Speed by raising buffer size to 8kb
+BUFFER_SIZE = 8192
+
 class Client:
     def __init__(self, host='localhost', port=12345, save_dir=''):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,7 +43,7 @@ class Client:
         file_path = os.path.join(self.save_dir, filename)
         with open(file_path, 'wb') as file:
             while True:
-                data = self.client_socket.recv(1024)
+                data = self.client_socket.recv(BUFFER_SIZE)
                 if not data:
                     break
                 file.write(data)
