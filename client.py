@@ -62,8 +62,11 @@ class Client:
                         break
                     bytes_received += len(data)
                     file.write(data)
-                    if self.gui and hasattr(self.gui, 'update_progress_bar'):  # Check if the gui instance and the method exist
-                        self.gui.update_progress_bar(bytes_received, file_size)  # Update the progress bar with current progress
+                    if self.gui is not None:
+                        if hasattr(self.gui, 'update_progress_bar'):
+                            self.gui.update_progress_bar(bytes_received, file_size)
+                        else:
+                            print("GUI does not have 'update_progress_bar' method.")
         except Exception as e:
             print(f"Error occurred: {e}")
         finally:
