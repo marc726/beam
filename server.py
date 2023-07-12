@@ -57,4 +57,4 @@ class Server:
         except Exception as e:
             print(f"Error occurred: {e}")
         finally:
-            self.disconnect_from_server()
+            client_socket.close()  # Close the socket connection with the client
