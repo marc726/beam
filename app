@@ -49,8 +49,7 @@ class Application(tk.Tk):
         self.save_dir_label.pack()
 
          # Add progress bar
-        self.progress = ttk.Progressbar(self, orient="horizontal",
-                                        length=200, mode="determinate")
+        self.progress = ttk.Progressbar(self, orient="horizontal", length=200, mode="determinate")
         self.progress.pack()
 
         self.client = None
@@ -108,13 +107,14 @@ class Application(tk.Tk):
             self.status_label.config(text="Port not provided.")
             return
         if self.client is None or not self.client.is_connected:
-            self.client = Client(host=ip, port=int(port), save_dir=self.save_dir, gui=self)  # Pass the Application instance to Client
+            self.client = Client(host=ip, port=int(port), save_dir=self.save_dir, gui=self)
+            print(f'Client.gui: {self.client.gui}')  # Debug print
             connection_status = self.client.connect_to_server()
-            self.start_server_button.config(state=tk.DISABLED)
 
             if connection_status:
                 self.status_label.config(text="Connected to server.")
                 self.connect_button.config(text="Disconnect from Server")
+                Thread(target=self.client.receive_file).start()  # Moved here
             else:
                 self.status_label.config(text="Failed to connect to server.")
         else:

@@ -26,6 +26,8 @@ class Client:
         except Exception as e:
             print(f'Failed to connect to the server: {e}')
             return False
+        
+        print(f'Client.gui: {self.gui}')  # Debug print
 
     def disconnect_from_server(self):
         self.client_socket.close()
@@ -52,6 +54,9 @@ class Client:
                 file_size += char
             file_size = int(file_size)
 
+            print(f'Client.gui: {self.gui}')  # Debug print
+            self.gui.update_progress_bar(bytes_received, file_size)
+
             # Open the file
             file_path = os.path.join(self.save_dir, filename)
             with open(file_path, 'wb') as file:
@@ -71,6 +76,8 @@ class Client:
             print(f"Error occurred: {e}")
         finally:
             self.disconnect_from_server()
+
+    print(f'Client.gui: {self.gui}')  # Debug print
 
     @staticmethod
     def print_progress_bar(completed, total):
