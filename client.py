@@ -54,23 +54,19 @@ class Client:
                 file_size += char
             file_size = int(file_size)
 
-            self.gui.update_progress_bar(bytes_received, file_size)
-
-            # Open the file
-            file_path = os.path.join(self.save_dir, filename)
-            with open(file_path, 'wb') as file:
+            # Create a new file in the current directory
+            with open(filename, 'wb') as file:
                 bytes_received = 0
                 while bytes_received < file_size:
-                    data = self.client_socket.recv(BUFFER_SIZE)
+                    bytes_to_read = min(BUFFER_SIZE, file_size - bytes_received)
+                    data = self.client_socket.recv(bytes_to_read)
                     if not data:
                         break
-                    bytes_received += len(data)
                     file.write(data)
-                    if self.gui is not None:
-                        if hasattr(self.gui, 'update_progress_bar'):
-                            self.gui.update_progress_bar(bytes_received, file_size)
-                        else:
-                            print("GUI does not have 'update_progress_bar' method.")
+                    bytes_received += len(data)
+                    if self.gui:  # Check if the gui instance was provided
+                        self.gui.update_progress_bar(bytes_received, file_size)
+            print('File received.')
         except Exception as e:
             print(f"Error occurred: {e}")
         finally:
