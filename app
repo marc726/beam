@@ -78,7 +78,7 @@ class Application(tk.Tk):
         if not server_port:
             self.status_label.config(text="Server port not provided.")
             return
-        self.server = Server(port=int(server_port))  # 'save_dir' is removed here.
+        self.server = Server(port=int(server_port), gui=self)
         self.connect_button.config(state=tk.DISABLED)
         self.stop_server_button.config(state=tk.NORMAL)
         self.server_port_entry.config(state=tk.DISABLED)
