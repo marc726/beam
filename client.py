@@ -37,7 +37,7 @@ class Client:
             # Receive filename
             filename = ""
             while True:
-                char = self.client_socket.recv(1).decode('utf-8')  # explicitly use 'utf-8' to decode
+                char = self.client_socket.recv(1).decode()
                 if char == '\n':
                     break
                 filename += char
@@ -45,7 +45,7 @@ class Client:
             # Receive file size
             file_size_str = ""
             while True:
-                char = self.client_socket.recv(1).decode('utf-8')  # explicitly use 'utf-8' to decode
+                char = self.client_socket.recv(1).decode()
                 if char == '\n':
                     break
                 file_size_str += char
@@ -53,17 +53,18 @@ class Client:
             file_size = int(file_size_str)
 
             # Create a new file in the current directory
-            with open(os.path.join(self.save_dir, filename), 'wb') as file:
+            with open(os.path.join(self.save_dir, filename), 'wb') as file:  # Open the file in binary mode
                 bytes_received = 0
                 while bytes_received < file_size:
                     bytes_to_read = min(BUFFER_SIZE, file_size - bytes_received)
-                    data = self.client_socket.recv(bytes_to_read)
+                    data = self.client_socket.recv(bytes_to_read)  # Receive data without decoding
                     if not data:
                         break
-                    file.write(data)
+                    file.write(data)  # Write data as it is
                     bytes_received += len(data)
                     if self.gui:
                         self.gui.update_progress_bar(bytes_received, file_size)
+
             print('File received.')
         except Exception as e:
             print(f"Error occurred: {e}")

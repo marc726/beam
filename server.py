@@ -38,23 +38,23 @@ class Server:
     def send_file(self, client_socket, file_path):
         try:
             filename = os.path.basename(file_path)
-            client_socket.sendall(filename.encode('utf-8') + b'\n')  # explicitly use 'utf-8' to encode
+            client_socket.sendall(filename.encode() + b'\n')
 
             file_size = os.path.getsize(file_path)
-            client_socket.sendall(str(file_size).encode('utf-8') + b'\n')  # explicitly use 'utf-8' to encode
+            client_socket.sendall(str(file_size).encode() + b'\n')
 
             bytes_sent = 0
-            with open(file_path, 'rb') as file:
+            with open(file_path, 'rb') as file:  # Open the file in binary mode
                 while True:
                     data = file.read(BUFFER_SIZE)
                     if not data:
                         break
-                    client_socket.sendall(data)
+                    client_socket.sendall(data)  # Send data without encoding
                     bytes_sent += len(data)
-                    if self.gui:  # Check if the gui instance was provided
+                    if self.gui:
                         self.gui.update_progress_bar(bytes_sent, file_size)
             print('File sent.')
         except Exception as e:
             print(f"Error occurred: {e}")
         finally:
-            client_socket.close()  # Close the socket connection with the client
+            client_socket.close()
