@@ -33,7 +33,6 @@ class Client:
         self.client_socket.close()
         self.is_connected = False
 
-    def receive_file(self):
         try:
             # Receive the first message from the server
             message = self.client_socket.recv(BUFFER_SIZE)
@@ -46,7 +45,14 @@ class Client:
             filename = message.decode().strip()
 
             # Receive file size
-            file_size = int(self.client_socket.recv(BUFFER_SIZE).decode().strip())
+            file_size_str = ""
+            while True:
+                char = self.client_socket.recv(1).decode()
+                if char == '\n':
+                    break
+                file_size_str += char
+
+            file_size = int(file_size_str)
 
             # Create a new file in the current directory
             with open(os.path.join(self.save_dir, filename), 'wb') as file:
