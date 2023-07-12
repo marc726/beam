@@ -39,9 +39,6 @@ class Server:
         filename = os.path.basename(file_path)
         client_socket.sendall(filename.encode() + b'\n')
 
-        print(f'Server.gui: {self.gui}')  # Debug print
-        self.gui.update_progress_bar(bytes_sent, file_size)  # Update the server's progress bar.
-
         file_size = os.path.getsize(file_path)
         bytes_sent = 0
         with open(file_path, 'rb') as file:
