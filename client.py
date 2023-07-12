@@ -35,23 +35,10 @@ class Client:
     def receive_file(self):
         try:
             # Receive the first message from the server
-            message = self.client_socket.recv(BUFFER_SIZE)
-
-            if message == b'No file selected.':
-                print('Server did not select a file.')
-                return
-
-            # If the message is not 'No file selected.', it is the filename
-            filename = message.decode().strip()
+            filename = self.client_socket.recv(BUFFER_SIZE).decode().strip()
 
             # Receive file size
-            file_size_str = ""
-            while True:
-                char = self.client_socket.recv(1).decode()
-                if char == '\n':
-                    break
-                file_size_str += char
-
+            file_size_str = self.client_socket.recv(BUFFER_SIZE).decode().strip()
             file_size = int(file_size_str)
 
             # Create a new file in the current directory
@@ -72,7 +59,7 @@ class Client:
             print(f"Error occurred: {e}")
         finally:
             self.disconnect_from_server()
-
+            
     @staticmethod
     def print_progress_bar(completed, total):
         percent = int((completed / total) * 100)
