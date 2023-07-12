@@ -46,16 +46,10 @@ class Client:
             filename = message.decode().strip()
 
             # Receive file size
-            file_size = ""
-            while True:
-                char = self.client_socket.recv(1).decode()
-                if char == '\n':
-                    break
-                file_size += char
-            file_size = int(file_size)
+            file_size = int(self.client_socket.recv(BUFFER_SIZE).decode().strip())
 
             # Create a new file in the current directory
-            with open(filename, 'wb') as file:
+            with open(os.path.join(self.save_dir, filename), 'wb') as file:
                 bytes_received = 0
                 while bytes_received < file_size:
                     bytes_to_read = min(BUFFER_SIZE, file_size - bytes_received)
@@ -66,6 +60,7 @@ class Client:
                     bytes_received += len(data)
                     if self.gui:  # Check if the gui instance was provided
                         self.gui.update_progress_bar(bytes_received, file_size)
+
             print('File received.')
         except Exception as e:
             print(f"Error occurred: {e}")
