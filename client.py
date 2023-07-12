@@ -1,18 +1,19 @@
 import socket
-from threading import Thread
-from tkinter import filedialog, Tk
 import os
+from tkinter import filedialog
+from threading import Thread
+from tkinter import Tk
 
 # Increase Speed by raising buffer size to 8kb
 BUFFER_SIZE = 8192
 
 class Client:
-    def __init__(self, host='localhost', port=12345, save_dir='', gui=None):  # Add a 'gui' parameter with a default value of None.
+    def __init__(self, host='localhost', port=12345, save_dir='', gui=None):  
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.host = host
         self.port = port
         self.save_dir = save_dir
-        self.gui = gui  # Assign the 'gui' parameter to an instance variable.
+        self.gui = gui
         self.is_connected = False
 
     def connect_to_server(self):
@@ -27,12 +28,11 @@ class Client:
             print(f'Failed to connect to the server: {e}')
             return False
         
-        print(f'Client.gui: {self.gui}')  # Debug print
-
     def disconnect_from_server(self):
         self.client_socket.close()
         self.is_connected = False
 
+    def receive_file(self):
         try:
             # Receive the first message from the server
             message = self.client_socket.recv(BUFFER_SIZE)
@@ -64,7 +64,7 @@ class Client:
                         break
                     file.write(data)
                     bytes_received += len(data)
-                    if self.gui:  # Check if the gui instance was provided
+                    if self.gui:  
                         self.gui.update_progress_bar(bytes_received, file_size)
 
             print('File received.')
@@ -72,8 +72,6 @@ class Client:
             print(f"Error occurred: {e}")
         finally:
             self.disconnect_from_server()
-
-        print(f'Client.gui: {self.gui}')  # Debug print
 
     @staticmethod
     def print_progress_bar(completed, total):
