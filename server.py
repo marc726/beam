@@ -38,10 +38,10 @@ class Server:
     def send_file(self, client_socket, file_path):
         try:
             filename = os.path.basename(file_path)
-            client_socket.sendall(filename.encode() + b'\n')
+            client_socket.sendall(filename.encode('utf-8') + b'\n')  # explicitly use 'utf-8' to encode
 
             file_size = os.path.getsize(file_path)
-            client_socket.sendall(str(file_size).encode() + b'\n')  # send the file size as a string followed by a newline
+            client_socket.sendall(str(file_size).encode('utf-8') + b'\n')  # explicitly use 'utf-8' to encode
 
             bytes_sent = 0
             with open(file_path, 'rb') as file:

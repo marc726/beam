@@ -37,7 +37,7 @@ class Client:
             # Receive filename
             filename = ""
             while True:
-                char = self.client_socket.recv(1).decode()
+                char = self.client_socket.recv(1).decode('utf-8')  # explicitly use 'utf-8' to decode
                 if char == '\n':
                     break
                 filename += char
@@ -45,7 +45,7 @@ class Client:
             # Receive file size
             file_size_str = ""
             while True:
-                char = self.client_socket.recv(1).decode()
+                char = self.client_socket.recv(1).decode('utf-8')  # explicitly use 'utf-8' to decode
                 if char == '\n':
                     break
                 file_size_str += char
@@ -64,7 +64,6 @@ class Client:
                     bytes_received += len(data)
                     if self.gui:
                         self.gui.update_progress_bar(bytes_received, file_size)
-
             print('File received.')
         except Exception as e:
             print(f"Error occurred: {e}")
