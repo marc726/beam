@@ -54,7 +54,6 @@ class Client:
                 file_size += char
             file_size = int(file_size)
 
-            print(f'Client.gui: {self.gui}')  # Debug print
             self.gui.update_progress_bar(bytes_received, file_size)
 
             # Open the file
@@ -77,7 +76,7 @@ class Client:
         finally:
             self.disconnect_from_server()
 
-    print(f'Client.gui: {self.gui}')  # Debug print
+        print(f'Client.gui: {self.gui}')  # Debug print
 
     @staticmethod
     def print_progress_bar(completed, total):
