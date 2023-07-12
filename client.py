@@ -34,11 +34,22 @@ class Client:
 
     def receive_file(self):
         try:
-            # Receive the first message from the server
-            filename = self.client_socket.recv(BUFFER_SIZE).decode().strip()
+            # Receive filename
+            filename = ""
+            while True:
+                char = self.client_socket.recv(1).decode()
+                if char == '\n':
+                    break
+                filename += char
 
             # Receive file size
-            file_size_str = self.client_socket.recv(BUFFER_SIZE).decode().strip()
+            file_size_str = ""
+            while True:
+                char = self.client_socket.recv(1).decode()
+                if char == '\n':
+                    break
+                file_size_str += char
+
             file_size = int(file_size_str)
 
             # Create a new file in the current directory
@@ -51,7 +62,7 @@ class Client:
                         break
                     file.write(data)
                     bytes_received += len(data)
-                    if self.gui:  
+                    if self.gui:
                         self.gui.update_progress_bar(bytes_received, file_size)
 
             print('File received.')
@@ -59,7 +70,7 @@ class Client:
             print(f"Error occurred: {e}")
         finally:
             self.disconnect_from_server()
-            
+
     @staticmethod
     def print_progress_bar(completed, total):
         percent = int((completed / total) * 100)
