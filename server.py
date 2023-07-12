@@ -40,6 +40,8 @@ class Server:
         client_socket.sendall(filename.encode() + b'\n')
 
         file_size = os.path.getsize(file_path)
+        client_socket.sendall(str(file_size).encode() + b'\n')  # send the file size as a string followed by a newline
+
         bytes_sent = 0
         with open(file_path, 'rb') as file:
             while True:
@@ -48,6 +50,6 @@ class Server:
                     break
                 client_socket.sendall(data)
                 bytes_sent += len(data)
-                self.gui.update_progress_bar(bytes_sent, file_size)  # Update the server's progress bar.
-        client_socket.sendall(b'EOF')  # Notify client of end of file
+                if self.gui:  # Check if the gui instance was provided
+                    self.gui.update_progress_bar(bytes_sent, file_size)
         print('File sent.')
