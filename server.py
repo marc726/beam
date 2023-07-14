@@ -1,60 +1,43 @@
 import socket
-import os
-from tkinter import filedialog
+import threading
 
-# Increase Speed by raising buffer size to 8kb
-BUFFER_SIZE = 8192
+HEADER = 64
+PORT = 1234
+SERVER = socket.gethostbyname(socket.gethostname())
+ADDR = (SERVER, PORT)
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "!DISCONNECT"
 
-class Server:
-    def __init__(self, save_dir='', host='0.0.0.0', port=12345, gui=None):
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Reuse port
-        self.server_socket.bind((host, port))
-        self.server_socket.listen(1)
-        self.running = False
-        self.gui = gui  # Store the 'gui' parameter as an instance variable
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(ADDR)
 
-    def start(self):
-        self.running = True
-        print('Server is waiting for a connection...')
-        while self.running:
-            try:
-                client_socket, addr = self.server_socket.accept()
-                print(f'Connected to {addr}')
-                file_path = filedialog.askopenfilename()
-                if file_path:
-                    self.send_file(client_socket, file_path)
-                else:
-                    client_socket.sendall(b'No file selected.')
-            except Exception as e:
-                print(f"Error occurred: {e}")
-            finally:
-                client_socket.close()
-        self.server_socket.close()
+def handle_client(conn,addr):
+    print(f"[NEW CONNECTION] {addr} connected.")
 
-    def stop(self):
-        self.running = False
+    connected = True
+    while connected:
+        msg_length = conn.recv(HEADER).decode(FORMAT)
+        if msg_length:
+            msg_length = int(msg_length)
+            msg = conn.recv(msg_length).decode(FORMAT)
+            if msg == DISCONNECT_MESSAGE:
+                break
+            
+            print(f"[{addr}] {msg}")
+        
 
-    def send_file(self, client_socket, file_path):
-        try:
-            filename = os.path.basename(file_path)
-            client_socket.sendall(filename.encode() + b'\n')
 
-            file_size = os.path.getsize(file_path)
-            client_socket.sendall(str(file_size).encode() + b'\n')
 
-            bytes_sent = 0
-            with open(file_path, 'rb') as file:  # Open the file in binary mode
-                while True:
-                    data = file.read(BUFFER_SIZE)
-                    if not data:
-                        break
-                    client_socket.sendall(data)  # Send data without encoding
-                    bytes_sent += len(data)
-                    if self.gui:
-                        self.gui.update_progress_bar(bytes_sent, file_size)
-            print('File sent.')
-        except Exception as e:
-            print(f"Error occurred: {e}")
-        finally:
-            client_socket.close()
+def start():
+    server.listen()
+    print(f"[LISTENING] Server is listening on {SERVER}")
+    while True:
+        conn,addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn,addr))
+        thread.start()
+        print(f"[ACTIVE CONNECTIONS] {threading.active_count()-1}")
+
+
+
+print("[STARTING] server is starting")
+start()
