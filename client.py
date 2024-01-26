@@ -17,12 +17,17 @@ def send_file(filename, host, port, log):
         logging.warning("Selected file does not exist")
         update_log(log, "File does not exist")
         return
+    
+    if '\x00' in os.path.basename(filename):
+        raise ValueError("Filename contains null characters")
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
         client_socket.connect((host, port))
-        client_socket.send(os.path.basename(filename).encode())
+        basename = os.path.basename(filename)
+        client_socket.send(len(basename).to_bytes(4, 'big'))  # Send length of filename
+        client_socket.send(basename.encode('utf-8'))  # Send filename
 
         with open(filename, 'rb') as f:
             while True:
