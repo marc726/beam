@@ -37,7 +37,8 @@ def handle_client(client_socket, addr, log):
     update_log(log, f"Connection from {addr}")
     with client_socket:
         try:
-            filename = client_socket.recv(1024).decode()
+            raw_filename = client_socket.recv(1024)
+            filename = raw_filename.decode('utf-8').rstrip('\x00')  # Handle decoding errors
             if not filename:
                 raise ValueError("No filename received")
             safe_filename = os.path.basename(filename)  # Avoid directory traversal attacks
